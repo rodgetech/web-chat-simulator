@@ -3,20 +3,27 @@
 import { Message } from "@/types/message";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageBubble } from "./message-bubble";
+import { TypingIndicator } from "../simulation/typing-indicator";
 import { useEffect, useRef } from "react";
 
 interface MessagesAreaProps {
   messages: Message[];
+  isTyping?: boolean;
+  typingIsOwnMessage?: boolean;
 }
 
-export function MessagesArea({ messages }: MessagesAreaProps) {
+export function MessagesArea({
+  messages,
+  isTyping = false,
+  typingIsOwnMessage = false,
+}: MessagesAreaProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isTyping]);
 
   return (
     <ScrollArea className="h-full">
@@ -39,6 +46,7 @@ export function MessagesArea({ messages }: MessagesAreaProps) {
             />
           );
         })}
+        {isTyping && <TypingIndicator isOwnMessage={typingIsOwnMessage} />}
       </div>
     </ScrollArea>
   );

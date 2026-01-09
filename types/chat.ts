@@ -10,4 +10,6 @@ export interface Chat {
   isGroup: boolean;
   isMuted: boolean;
   isOnline?: boolean;
+  isSimulated?: boolean; // Flag to identify simulated chats
+  simulationId?: string; // Reference to SimulatedConversation.id
 }

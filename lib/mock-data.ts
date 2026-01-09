@@ -14,8 +14,8 @@ export const mockChats: Chat[] = [
     id: "1",
     name: "Lucas",
     lastMessage:
-      "By the way, I’ll also need a new website for my Ideal & Milk business. How soon can we start?",
-    lastMessageTime: daysAgo(0),
+      "By the way, I'll also need a new website for my Ideal & Milk business. How soon can we start?",
+    lastMessageTime: hoursAgo(3),
     unreadCount: 0,
     isPinned: true,
     isArchived: false,
