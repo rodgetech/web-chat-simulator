@@ -256,6 +256,7 @@ export default function Home() {
           ? {
               ...chat,
               name: simulation.participantName,
+              avatar: simulation.participantAvatar,
               lastMessage:
                 simulation.playedMessages && simulation.playedMessages.length > 0
                   ? simulation.playedMessages[simulation.playedMessages.length - 1].content
