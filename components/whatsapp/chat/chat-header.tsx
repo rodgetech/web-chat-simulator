@@ -11,12 +11,24 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getAvatarColor } from "@/lib/avatar-utils";
 import { Video, Phone, Search, MoreVertical } from "lucide-react";
+import { SimulationControls } from "../simulation/simulation-controls";
+import type { PlaybackState } from "@/types/simulation";
 
 interface ChatHeaderProps {
   chat: Chat;
+  isEditMode?: boolean;
+  playbackState?: PlaybackState;
+  onToggleEditMode?: () => void;
+  onPlaySimulation?: () => void;
 }
 
-export function ChatHeader({ chat }: ChatHeaderProps) {
+export function ChatHeader({
+  chat,
+  isEditMode = false,
+  playbackState = "idle",
+  onToggleEditMode,
+  onPlaySimulation,
+}: ChatHeaderProps) {
   return (
     <div className="flex items-center justify-between px-4 py-2.5 bg-wa-bg-main border-b border-wa-border">
       <div className="flex items-center gap-3">
@@ -39,6 +51,14 @@ export function ChatHeader({ chat }: ChatHeaderProps) {
         </div>
       </div>
       <div className="flex items-center gap-2">
+        {chat.isSimulated && onToggleEditMode && (
+          <SimulationControls
+            isEditMode={isEditMode}
+            playbackState={playbackState}
+            onToggleMode={onToggleEditMode}
+            onPlay={onPlaySimulation}
+          />
+        )}
         <Button
           variant="ghost"
           size="icon"

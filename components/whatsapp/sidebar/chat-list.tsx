@@ -11,10 +11,15 @@ interface ChatListProps {
 }
 
 export function ChatList({ chats, selectedChatId, onSelectChat }: ChatListProps) {
+  // Sort chats by most recent message time (newest first)
+  const sortedChats = [...chats].sort((a, b) => {
+    return new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime();
+  });
+
   return (
     <ScrollArea className="h-full">
       <div>
-        {chats.map((chat) => (
+        {sortedChats.map((chat) => (
           <ChatListItem
             key={chat.id}
             chat={chat}

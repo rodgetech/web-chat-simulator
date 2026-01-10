@@ -6,6 +6,10 @@ import { Message } from "@/types/message";
 import { Sidebar } from "./sidebar";
 import { ChatArea } from "./chat-area";
 import { NavSidebar, NavTab } from "../navigation/nav-sidebar";
+import type {
+  SimulatedConversation,
+  PlaybackEngine,
+} from "@/types/simulation";
 
 interface MainLayoutProps {
   chats: Chat[];
@@ -13,6 +17,14 @@ interface MainLayoutProps {
   selectedChatId: string;
   onSelectChat: (chatId: string) => void;
   onSendMessage: (content: string) => void;
+  isEditMode?: boolean;
+  currentSimulation?: SimulatedConversation | null;
+  onUpdateSimulation?: (simulation: SimulatedConversation) => void;
+  onToggleEditMode?: () => void;
+  onCreateSimulation?: () => void;
+  onPlaySimulation?: () => void;
+  playbackEngine?: PlaybackEngine;
+  simulatedInputText?: string;
 }
 
 export function MainLayout({
@@ -21,6 +33,14 @@ export function MainLayout({
   selectedChatId,
   onSelectChat,
   onSendMessage,
+  isEditMode,
+  currentSimulation,
+  onUpdateSimulation,
+  onToggleEditMode,
+  onCreateSimulation,
+  onPlaySimulation,
+  playbackEngine,
+  simulatedInputText,
 }: MainLayoutProps) {
   const [activeNavTab, setActiveNavTab] = useState<NavTab>("chats");
   const selectedChat = chats.find((chat) => chat.id === selectedChatId);
@@ -33,11 +53,23 @@ export function MainLayout({
           chats={chats}
           selectedChatId={selectedChatId}
           onSelectChat={onSelectChat}
+          onCreateSimulation={onCreateSimulation}
         />
       </aside>
       <main className="flex-1 flex flex-col min-w-0">
         {selectedChat ? (
-          <ChatArea chat={selectedChat} messages={messages} onSendMessage={onSendMessage} />
+          <ChatArea
+            chat={selectedChat}
+            messages={messages}
+            onSendMessage={onSendMessage}
+            isEditMode={isEditMode}
+            currentSimulation={currentSimulation}
+            onUpdateSimulation={onUpdateSimulation}
+            onToggleEditMode={onToggleEditMode}
+            onPlaySimulation={onPlaySimulation}
+            playbackEngine={playbackEngine}
+            simulatedInputText={simulatedInputText}
+          />
         ) : (
           <div className="flex items-center justify-center h-full">
             <p className="text-wa-text-secondary">Select a chat to start messaging</p>

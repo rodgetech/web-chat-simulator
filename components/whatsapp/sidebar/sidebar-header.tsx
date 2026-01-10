@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageCircle, MoreVertical, Users } from "lucide-react";
+import { MoreVertical, SquarePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,7 +10,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { WhatsAppLogo } from "../common/whatsapp-logo";
 
-export function SidebarHeader() {
+interface SidebarHeaderProps {
+  onCreateSimulation?: () => void;
+}
+
+export function SidebarHeader({ onCreateSimulation }: SidebarHeaderProps) {
   return (
     <div className="flex items-center justify-between px-4 py-4 bg-wa-bg-main">
       <WhatsAppLogo />
@@ -19,15 +23,10 @@ export function SidebarHeader() {
           variant="ghost"
           size="icon"
           className="h-10 w-10 text-wa-icon hover:bg-wa-bg-hover"
+          onClick={onCreateSimulation}
+          title="New Simulation"
         >
-          <Users className="h-5 w-5" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-10 w-10 text-wa-icon hover:bg-wa-bg-hover"
-        >
-          <MessageCircle className="h-5 w-5" />
+          <SquarePlus className="h-5 w-5" />
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
