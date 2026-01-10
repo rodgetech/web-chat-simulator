@@ -18,6 +18,7 @@ export interface SimulatedConversation {
   participantAvatar?: string;
   messages: SimulatedMessage[];
   playedMessages?: Message[]; // Stores completed playback messages for persistence
+  typingMode?: "instant" | "realistic"; // Typing animation mode for own messages (default: "instant")
   createdAt: Date;
   updatedAt: Date;
 }
@@ -38,5 +39,6 @@ export interface PlaybackEngine {
   currentMessageIndex: number;
   isTyping: boolean;
   typingIsOwnMessage: boolean; // Track whose typing indicator to show
+  simulatedInputText?: string; // Text being typed in input box (realistic mode only)
   currentStatusTransition?: StatusTransition;
 }

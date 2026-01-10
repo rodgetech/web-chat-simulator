@@ -33,6 +33,7 @@ export default function Home() {
     currentMessageIndex: 0,
     isTyping: false,
     typingIsOwnMessage: false,
+    simulatedInputText: "",
   });
 
   // Dialog state
@@ -293,6 +294,7 @@ export default function Home() {
       currentMessageIndex: 0,
       isTyping: false,
       typingIsOwnMessage: false,
+      simulatedInputText: "",
     });
 
     // Initialize playback messages tracking
@@ -316,8 +318,19 @@ export default function Home() {
           typingIsOwnMessage: isOwnMessage,
         }));
       },
+      // onInputTyping callback for realistic mode
+      (text, isComplete) => {
+        setPlaybackEngine((prev) => ({
+          ...prev,
+          simulatedInputText: text,
+        }));
+      },
       () => {
-        setPlaybackEngine((prev) => ({ ...prev, state: "completed" }));
+        setPlaybackEngine((prev) => ({
+          ...prev,
+          state: "completed",
+          simulatedInputText: "",  // Clear on complete
+        }));
 
         // Save played messages to localStorage
         if (activeSimulation && playbackMessagesRef.current.length > 0) {
@@ -411,8 +424,19 @@ export default function Home() {
                 typingIsOwnMessage: isOwnMessage,
               }));
             },
+            // onInputTyping callback for realistic mode
+            (text, isComplete) => {
+              setPlaybackEngine((prev) => ({
+                ...prev,
+                simulatedInputText: text,
+              }));
+            },
             () => {
-              setPlaybackEngine((prev) => ({ ...prev, state: "completed" }));
+              setPlaybackEngine((prev) => ({
+                ...prev,
+                state: "completed",
+                simulatedInputText: "",  // Clear on complete
+              }));
 
               // Save played messages to localStorage
               if (activeSimulation && playbackMessagesRef.current.length > 0) {
@@ -481,6 +505,7 @@ export default function Home() {
         onCreateSimulation={() => setCreateDialogOpen(true)}
         onPlaySimulation={handlePlaySimulation}
         playbackEngine={playbackEngine}
+        simulatedInputText={playbackEngine.simulatedInputText}
       />
 
       <CreateSimulationDialog

@@ -21,6 +21,7 @@ interface ChatAreaProps {
   onToggleEditMode?: () => void;
   onPlaySimulation?: () => void;
   playbackEngine?: PlaybackEngine;
+  simulatedInputText?: string;  // Text being typed in input box during simulation
 }
 
 export function ChatArea({
@@ -33,6 +34,7 @@ export function ChatArea({
   onToggleEditMode,
   onPlaySimulation,
   playbackEngine,
+  simulatedInputText,
 }: ChatAreaProps) {
   const defaultPlaybackEngine: PlaybackEngine = {
     state: "idle",
@@ -66,7 +68,13 @@ export function ChatArea({
           />
         )}
       </div>
-      {!isEditMode && <MessageInput onSendMessage={onSendMessage} />}
+      {!isEditMode && (
+        <MessageInput
+          onSendMessage={onSendMessage}
+          simulatedTyping={simulatedInputText}
+          disabled={engine.state === "playing"}
+        />
+      )}
     </div>
   );
 }

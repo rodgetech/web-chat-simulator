@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, User } from "lucide-react";
+import { Plus, User, Zap, Clock } from "lucide-react";
 import type { SimulatedConversation, SimulatedMessage } from "@/types/simulation";
 import { MessageEditorItem } from "./message-editor-item";
 import { Button } from "@/components/ui/button";
@@ -93,6 +93,44 @@ export function SimulationEditor({
               className="h-9"
             />
           </div>
+        </div>
+
+        {/* Typing Mode Toggle */}
+        <div className="flex flex-col gap-2 mt-3">
+          <label className="text-xs text-wa-text-secondary">Typing Mode:</label>
+          <div className="flex gap-2">
+            <button
+              onClick={() =>
+                onUpdate({ ...simulation, typingMode: "instant" })
+              }
+              className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs transition-colors ${
+                (simulation.typingMode || "instant") === "instant"
+                  ? "bg-wa-icon-active text-white"
+                  : "bg-wa-bg-hover text-wa-text-secondary hover:bg-wa-border"
+              }`}
+            >
+              <Zap className="h-3 w-3" />
+              Instant
+            </button>
+            <button
+              onClick={() =>
+                onUpdate({ ...simulation, typingMode: "realistic" })
+              }
+              className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs transition-colors ${
+                simulation.typingMode === "realistic"
+                  ? "bg-wa-icon-active text-white"
+                  : "bg-wa-bg-hover text-wa-text-secondary hover:bg-wa-border"
+              }`}
+            >
+              <Clock className="h-3 w-3" />
+              Realistic
+            </button>
+          </div>
+          <p className="text-xs text-wa-text-tertiary">
+            {(simulation.typingMode || "instant") === "instant"
+              ? "Messages appear quickly without typing animation"
+              : "Simulates realistic typing in the input box"}
+          </p>
         </div>
       </div>
 

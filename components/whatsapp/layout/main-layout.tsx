@@ -24,6 +24,7 @@ interface MainLayoutProps {
   onCreateSimulation?: () => void;
   onPlaySimulation?: () => void;
   playbackEngine?: PlaybackEngine;
+  simulatedInputText?: string;
 }
 
 export function MainLayout({
@@ -39,6 +40,7 @@ export function MainLayout({
   onCreateSimulation,
   onPlaySimulation,
   playbackEngine,
+  simulatedInputText,
 }: MainLayoutProps) {
   const [activeNavTab, setActiveNavTab] = useState<NavTab>("chats");
   const selectedChat = chats.find((chat) => chat.id === selectedChatId);
@@ -66,6 +68,7 @@ export function MainLayout({
             onToggleEditMode={onToggleEditMode}
             onPlaySimulation={onPlaySimulation}
             playbackEngine={playbackEngine}
+            simulatedInputText={simulatedInputText}
           />
         ) : (
           <div className="flex items-center justify-center h-full">
