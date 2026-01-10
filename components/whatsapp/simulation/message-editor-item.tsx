@@ -5,7 +5,7 @@ import type { SimulatedMessage } from "@/types/simulation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface MessageEditorItemProps {
   message: SimulatedMessage;
@@ -26,11 +26,19 @@ export function MessageEditorItem({
   canMoveUp,
   canMoveDown,
 }: MessageEditorItemProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(message.content === "");
   const [editedContent, setEditedContent] = useState(message.content);
   const [editedDelay, setEditedDelay] = useState(
     Math.round(message.delayMs / 1000)
   );
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-focus textarea when entering edit mode
+  useEffect(() => {
+    if (isEditing && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [isEditing]);
 
   const handleSave = () => {
     onUpdate({
@@ -108,6 +116,7 @@ export function MessageEditorItem({
         {isEditing ? (
           <div className="space-y-2">
             <Textarea
+              ref={textareaRef}
               value={editedContent}
               onChange={(e) => setEditedContent(e.target.value)}
               className="min-h-[60px] resize-none"

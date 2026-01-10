@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { nanoid } from "nanoid";
+import { useEffect, useRef } from "react";
 
 interface SimulationEditorProps {
   simulation: SimulatedConversation;
@@ -17,6 +18,9 @@ export function SimulationEditor({
   simulation,
   onUpdate,
 }: SimulationEditorProps) {
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
   const handleUpdateParticipantName = (name: string) => {
     onUpdate({ ...simulation, participantName: name });
   };
@@ -34,6 +38,13 @@ export function SimulationEditor({
       messages: [...simulation.messages, newMessage],
     });
   };
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [simulation.messages.length]);
 
   const handleUpdateMessage = (index: number, message: SimulatedMessage) => {
     const updatedMessages = [...simulation.messages];
@@ -109,6 +120,7 @@ export function SimulationEditor({
               />
             ))
           )}
+          <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
 
