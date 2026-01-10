@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { MainLayout } from "@/components/whatsapp/layout/main-layout";
 import { mockChats, mockMessages } from "@/lib/mock-data";
 import { Message, MessageStatus } from "@/types/message";
@@ -19,7 +19,7 @@ import { CreateSimulationDialog } from "@/components/whatsapp/simulation/create-
 import { ConversationPlayer } from "@/lib/playback-engine";
 
 export default function Home() {
-  const [selectedChatId, setSelectedChatId] = useState<string>("1");
+  const [selectedChatId, setSelectedChatId] = useState<string>("");
   const [allMessages, setAllMessages] = useState<Record<string, Message[]>>(mockMessages);
 
   // Simulation state
@@ -41,11 +41,74 @@ export default function Home() {
   // All chats (mock + simulated)
   const [allChats, setAllChats] = useState<Chat[]>(mockChats);
 
+  // Track if initial load is complete
+  const initialLoadRef = useRef<boolean>(false);
+
   // Playback engine player instance
   const playerRef = useRef<ConversationPlayer>(new ConversationPlayer());
 
   // Track messages during playback (ref for reliable async tracking)
   const playbackMessagesRef = useRef<Message[]>([]);
+
+  // Shared logic for selecting a chat (used by both user clicks and auto-select)
+  const selectChatInternal = useCallback(
+    (
+      chatId: string,
+      chats: Chat[],
+      simulationsData: Record<string, SimulatedConversation>
+    ) => {
+      const chat = chats.find((c) => c.id === chatId);
+
+      if (!chat) {
+        console.warn(`Chat ${chatId} not found`);
+        return;
+      }
+
+      setSelectedChatId(chatId);
+
+      // Check if this is a simulated chat
+      if (chat.isSimulated && chat.simulationId) {
+        const simulation = simulationsData[chat.simulationId];
+
+        if (!simulation) {
+          console.warn(`Simulation ${chat.simulationId} not found`);
+          return;
+        }
+
+        setActiveSimulation(chat.simulationId);
+
+        // Check if simulation has been played before
+        if (simulation.playedMessages && simulation.playedMessages.length > 0) {
+          // Show messages view (not editor)
+          setIsEditMode(false);
+          setAllMessages((prev) => ({
+            ...prev,
+            [chatId]: simulation.playedMessages!,
+          }));
+          setPlaybackEngine({
+            state: "completed",
+            currentMessageIndex: simulation.playedMessages.length,
+            isTyping: false,
+            typingIsOwnMessage: false,
+          });
+        } else {
+          // Never played - show editor
+          setIsEditMode(true);
+          setAllMessages((prev) => ({ ...prev, [chatId]: [] }));
+          setPlaybackEngine({
+            state: "idle",
+            currentMessageIndex: 0,
+            isTyping: false,
+            typingIsOwnMessage: false,
+          });
+        }
+      } else {
+        setActiveSimulation(null);
+        setIsEditMode(false);
+      }
+    },
+    []
+  );
 
   // Load simulations from localStorage on mount
   useEffect(() => {
@@ -71,7 +134,60 @@ export default function Home() {
       simulationId: sim.id,
     }));
 
-    setAllChats([...mockChats, ...simChats]);
+    const combinedChats = [...mockChats, ...simChats];
+    setAllChats(combinedChats);
+
+    // Auto-select most recent chat after data is loaded
+    if (!initialLoadRef.current && combinedChats.length > 0) {
+      const sortedChats = [...combinedChats].sort((a, b) => {
+        return new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime();
+      });
+
+      initialLoadRef.current = true;
+
+      // Call selectChatInternal directly with loaded data
+      const mostRecentChat = sortedChats[0];
+      const chat = combinedChats.find((c) => c.id === mostRecentChat.id);
+
+      if (!chat) return;
+
+      setSelectedChatId(mostRecentChat.id);
+
+      if (chat.isSimulated && chat.simulationId) {
+        const simulation = loadedSimulations[chat.simulationId];
+
+        if (!simulation) return;
+
+        setActiveSimulation(chat.simulationId);
+
+        if (simulation.playedMessages && simulation.playedMessages.length > 0) {
+          setIsEditMode(false);
+          setAllMessages((prev) => ({
+            ...prev,
+            [mostRecentChat.id]: simulation.playedMessages!,
+          }));
+          setPlaybackEngine({
+            state: "completed",
+            currentMessageIndex: simulation.playedMessages.length,
+            isTyping: false,
+            typingIsOwnMessage: false,
+          });
+        } else {
+          setIsEditMode(true);
+          setAllMessages((prev) => ({ ...prev, [mostRecentChat.id]: [] }));
+          setPlaybackEngine({
+            state: "idle",
+            currentMessageIndex: 0,
+            isTyping: false,
+            typingIsOwnMessage: false,
+          });
+        }
+      } else {
+        setActiveSimulation(null);
+        setIsEditMode(false);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Auto-save simulation on changes (debounced)
@@ -140,8 +256,9 @@ export default function Home() {
               ...chat,
               name: simulation.participantName,
               lastMessage:
-                simulation.messages[0]?.content ||
-                "Start building your conversation",
+                simulation.playedMessages && simulation.playedMessages.length > 0
+                  ? simulation.playedMessages[simulation.playedMessages.length - 1].content
+                  : simulation.messages[0]?.content || "Start building your conversation",
               lastMessageTime: simulation.updatedAt,
             }
           : chat
@@ -149,45 +266,12 @@ export default function Home() {
     );
   };
 
-  const handleSelectChat = (chatId: string) => {
-    setSelectedChatId(chatId);
-
-    // Check if this is a simulated chat
-    const chat = allChats.find((c) => c.id === chatId);
-    if (chat?.isSimulated && chat.simulationId) {
-      setActiveSimulation(chat.simulationId);
-      const simulation = simulations[chat.simulationId];
-
-      // Check if simulation has been played before
-      if (simulation?.playedMessages && simulation.playedMessages.length > 0) {
-        // Show messages view (not editor)
-        setIsEditMode(false);
-        setAllMessages((prev) => ({
-          ...prev,
-          [chatId]: simulation.playedMessages!,
-        }));
-        setPlaybackEngine({
-          state: "completed",
-          currentMessageIndex: simulation.playedMessages.length,
-          isTyping: false,
-          typingIsOwnMessage: false,
-        });
-      } else {
-        // Never played - show editor
-        setIsEditMode(true);
-        setAllMessages((prev) => ({ ...prev, [chatId]: [] }));
-        setPlaybackEngine({
-          state: "idle",
-          currentMessageIndex: 0,
-          isTyping: false,
-          typingIsOwnMessage: false,
-        });
-      }
-    } else {
-      setActiveSimulation(null);
-      setIsEditMode(false);
-    }
-  };
+  const handleSelectChat = useCallback(
+    (chatId: string) => {
+      selectChatInternal(chatId, allChats, simulations);
+    },
+    [selectChatInternal, allChats, simulations]
+  );
 
   const getCurrentSimulation = (): SimulatedConversation | null => {
     if (!activeSimulation) return null;

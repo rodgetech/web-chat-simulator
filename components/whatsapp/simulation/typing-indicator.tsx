@@ -7,16 +7,16 @@ interface TypingIndicatorProps {
 export function TypingIndicator({ isOwnMessage }: TypingIndicatorProps) {
   return (
     <div
-      className={`flex ${
+      className={`flex mb-1 ${
         isOwnMessage ? "justify-end" : "justify-start"
-      } px-16 py-1 animate-in fade-in duration-200`}
+      } animate-in fade-in duration-200`}
     >
       <div
         className={`${
           isOwnMessage
-            ? "bg-wa-bg-sender"
-            : "bg-wa-bg-recipient"
-        } rounded-lg px-4 py-2 max-w-[65%] shadow-sm`}
+            ? "bg-wa-bg-sender rounded-tr-none"
+            : "bg-wa-bg-recipient rounded-tl-none"
+        } rounded-lg px-3 py-2 shadow-sm`}
       >
         <div className="flex items-center gap-1">
           <div
