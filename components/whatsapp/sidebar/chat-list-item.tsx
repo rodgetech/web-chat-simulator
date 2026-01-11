@@ -39,17 +39,17 @@ export function ChatListItem({ chat, isSelected, onClick, onDelete }: ChatListIt
             {chat.name[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 overflow-hidden">
           <div className="flex justify-between items-baseline mb-0.5">
-            <span className="font-medium text-wa-text-primary truncate text-base">
+            <span className="font-medium text-wa-text-primary truncate text-base flex-1 min-w-0">
               {chat.name}
             </span>
             <span className="text-xs text-wa-text-secondary flex-shrink-0 ml-2">
               {formatTimestamp(chat.lastMessageTime)}
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            <p className="text-sm text-wa-text-secondary truncate flex-1">
+          <div className="flex items-center gap-2 min-w-0">
+            <p className="text-sm text-wa-text-secondary truncate flex-1 min-w-0">
               {chat.lastMessage}
             </p>
             <div className="flex items-center gap-1 flex-shrink-0">
