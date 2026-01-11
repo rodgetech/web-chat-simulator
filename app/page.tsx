@@ -14,6 +14,7 @@ import {
   saveSimulation,
   savePlayedMessages,
   clearPlayedMessages,
+  deleteSimulation,
 } from "@/lib/simulation-storage";
 import { CreateSimulationDialog } from "@/components/whatsapp/simulation/create-simulation-dialog";
 import { ConversationPlayer } from "@/lib/playback-engine";
@@ -275,6 +276,59 @@ export default function Home() {
     [selectChatInternal, allChats, simulations]
   );
 
+  const handleDeleteChat = useCallback(
+    (chatId: string) => {
+      console.log("🗑️ handleDeleteChat called with chatId:", chatId);
+
+      setAllChats((currentChats) => {
+        console.log("Current chats count:", currentChats.length);
+        const chat = currentChats.find((c) => c.id === chatId);
+
+        if (!chat) {
+          console.error("❌ Chat not found:", chatId);
+          return currentChats;
+        }
+
+        console.log("✅ Found chat to delete:", chat.name);
+
+        // If it's a simulated chat, delete from localStorage
+        if (chat.isSimulated && chat.simulationId) {
+          console.log("Deleting simulated chat from localStorage");
+          deleteSimulation(chat.simulationId);
+
+          // Remove from simulations state
+          setSimulations((prev) => {
+            const updated = { ...prev };
+            delete updated[chat.simulationId!];
+            return updated;
+          });
+        }
+
+        // Remove from allChats
+        const updatedChats = currentChats.filter((c) => c.id !== chatId);
+        console.log("✅ Chats after deletion:", updatedChats.length);
+
+        // If the deleted chat was selected, select another chat
+        if (selectedChatId === chatId) {
+          if (updatedChats.length > 0) {
+            // Select the most recent chat
+            const sortedChats = [...updatedChats].sort((a, b) => {
+              return new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime();
+            });
+            setSelectedChatId(sortedChats[0].id);
+          } else {
+            setSelectedChatId("");
+            setActiveSimulation(null);
+            setIsEditMode(false);
+          }
+        }
+
+        return updatedChats;
+      });
+    },
+    [selectedChatId]
+  );
+
   const getCurrentSimulation = (): SimulatedConversation | null => {
     if (!activeSimulation) return null;
     return simulations[activeSimulation] || null;
@@ -498,6 +552,7 @@ export default function Home() {
         messages={allMessages[selectedChatId] || []}
         selectedChatId={selectedChatId}
         onSelectChat={handleSelectChat}
+        onDeleteChat={handleDeleteChat}
         onSendMessage={handleSendMessage}
         isEditMode={isEditMode}
         currentSimulation={getCurrentSimulation()}

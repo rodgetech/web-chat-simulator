@@ -10,6 +10,7 @@ interface SidebarProps {
   chats: Chat[];
   selectedChatId: string;
   onSelectChat: (chatId: string) => void;
+  onDeleteChat: (chatId: string) => void;
   onCreateSimulation?: () => void;
 }
 
@@ -17,6 +18,7 @@ export function Sidebar({
   chats,
   selectedChatId,
   onSelectChat,
+  onDeleteChat,
   onCreateSimulation,
 }: SidebarProps) {
   return (
@@ -33,6 +35,7 @@ export function Sidebar({
           chats={chats}
           selectedChatId={selectedChatId}
           onSelectChat={onSelectChat}
+          onDeleteChat={onDeleteChat}
         />
       </div>
     </div>

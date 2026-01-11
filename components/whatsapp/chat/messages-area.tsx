@@ -35,8 +35,8 @@ export function MessagesArea({
         }}
       >
         {messages.map((message, index) => {
-          const prevMessage = index > 0 ? messages[index - 1] : null;
-          const isDirectionChange = prevMessage && prevMessage.isOwnMessage !== message.isOwnMessage;
+          const prevMessage = index > 0 ? messages[index - 1] : undefined;
+          const isDirectionChange = prevMessage ? prevMessage.isOwnMessage !== message.isOwnMessage : false;
 
           return (
             <MessageBubble

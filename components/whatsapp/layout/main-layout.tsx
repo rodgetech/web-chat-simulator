@@ -16,6 +16,7 @@ interface MainLayoutProps {
   messages: Message[];
   selectedChatId: string;
   onSelectChat: (chatId: string) => void;
+  onDeleteChat: (chatId: string) => void;
   onSendMessage: (content: string) => void;
   isEditMode?: boolean;
   currentSimulation?: SimulatedConversation | null;
@@ -32,6 +33,7 @@ export function MainLayout({
   messages,
   selectedChatId,
   onSelectChat,
+  onDeleteChat,
   onSendMessage,
   isEditMode,
   currentSimulation,
@@ -53,6 +55,7 @@ export function MainLayout({
           chats={chats}
           selectedChatId={selectedChatId}
           onSelectChat={onSelectChat}
+          onDeleteChat={onDeleteChat}
           onCreateSimulation={onCreateSimulation}
         />
       </aside>
@@ -69,6 +72,7 @@ export function MainLayout({
             onPlaySimulation={onPlaySimulation}
             playbackEngine={playbackEngine}
             simulatedInputText={simulatedInputText}
+            onDeleteChat={() => onDeleteChat(selectedChat.id)}
           />
         ) : (
           <div className="flex items-center justify-center h-full">

@@ -22,6 +22,7 @@ interface ChatAreaProps {
   onPlaySimulation?: () => void;
   playbackEngine?: PlaybackEngine;
   simulatedInputText?: string;  // Text being typed in input box during simulation
+  onDeleteChat?: () => void;
 }
 
 export function ChatArea({
@@ -35,6 +36,7 @@ export function ChatArea({
   onPlaySimulation,
   playbackEngine,
   simulatedInputText,
+  onDeleteChat,
 }: ChatAreaProps) {
   const defaultPlaybackEngine: PlaybackEngine = {
     state: "idle",
@@ -53,6 +55,7 @@ export function ChatArea({
         playbackState={engine.state}
         onToggleEditMode={onToggleEditMode}
         onPlaySimulation={onPlaySimulation}
+        onDeleteChat={onDeleteChat}
       />
       <div className="flex-1 overflow-hidden">
         {isEditMode && currentSimulation && onUpdateSimulation ? (

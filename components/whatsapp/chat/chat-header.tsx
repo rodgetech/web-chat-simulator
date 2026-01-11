@@ -20,6 +20,7 @@ interface ChatHeaderProps {
   playbackState?: PlaybackState;
   onToggleEditMode?: () => void;
   onPlaySimulation?: () => void;
+  onDeleteChat?: () => void;
 }
 
 export function ChatHeader({
@@ -28,6 +29,7 @@ export function ChatHeader({
   playbackState = "idle",
   onToggleEditMode,
   onPlaySimulation,
+  onDeleteChat,
 }: ChatHeaderProps) {
   return (
     <div className="flex items-center justify-between px-4 py-2.5 bg-wa-bg-main border-b border-wa-border">
@@ -99,7 +101,18 @@ export function ChatHeader({
             <DropdownMenuItem>Close chat</DropdownMenuItem>
             <DropdownMenuItem>Mute notifications</DropdownMenuItem>
             <DropdownMenuItem>Clear messages</DropdownMenuItem>
-            <DropdownMenuItem className="text-red-500">Delete chat</DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-red-500 focus:text-red-500"
+              onSelect={(e) => {
+                e.preventDefault();
+                console.log("🗑️ DELETE FROM HEADER - Chat:", chat.id, chat.name);
+                if (onDeleteChat) {
+                  onDeleteChat();
+                }
+              }}
+            >
+              Delete chat
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
