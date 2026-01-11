@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WhatsApp Web",
-  description: "WhatsApp Web Clone",
+  title: "Web Chat Simulator",
+  description: "A chat simulator for automating chat conversations",
 };
 
 export default function RootLayout({

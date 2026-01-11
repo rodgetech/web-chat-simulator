@@ -18,8 +18,8 @@ export function ChatList({ chats, selectedChatId, onSelectChat, onDeleteChat }: 
   });
 
   return (
-    <ScrollArea className="h-full">
-      <div>
+    <ScrollArea className="h-full w-full">
+      <div className="w-full">
         {sortedChats.map((chat) => (
           <ChatListItem
             key={chat.id}

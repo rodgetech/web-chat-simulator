@@ -25,7 +25,7 @@ export function ChatListItem({ chat, isSelected, onClick, onDelete }: ChatListIt
   return (
     <div
       className={cn(
-        "flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors group relative",
+        "flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors group relative overflow-hidden w-full",
         isSelected ? "bg-wa-bg-hover" : "hover:bg-wa-bg-hover/50"
       )}
     >
@@ -40,7 +40,7 @@ export function ChatListItem({ chat, isSelected, onClick, onDelete }: ChatListIt
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0 overflow-hidden">
-          <div className="flex justify-between items-baseline mb-0.5">
+          <div className="flex justify-between items-baseline mb-0.5 overflow-hidden">
             <span className="font-medium text-wa-text-primary truncate text-base flex-1 min-w-0">
               {chat.name}
             </span>
@@ -48,8 +48,8 @@ export function ChatListItem({ chat, isSelected, onClick, onDelete }: ChatListIt
               {formatTimestamp(chat.lastMessageTime)}
             </span>
           </div>
-          <div className="flex items-center gap-2 min-w-0">
-            <p className="text-sm text-wa-text-secondary truncate flex-1 min-w-0">
+          <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+            <p className="text-sm text-wa-text-secondary flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
               {chat.lastMessage}
             </p>
             <div className="flex items-center gap-1 flex-shrink-0">

@@ -3,12 +3,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { MainLayout } from "@/components/whatsapp/layout/main-layout";
 import { mockChats, mockMessages } from "@/lib/mock-data";
-import { Message, MessageStatus } from "@/types/message";
+import { Message } from "@/types/message";
 import { Chat } from "@/types/chat";
-import type {
-  SimulatedConversation,
-  PlaybackEngine,
-} from "@/types/simulation";
+import type { SimulatedConversation, PlaybackEngine } from "@/types/simulation";
 import {
   loadSimulations,
   saveSimulation,
@@ -21,7 +18,8 @@ import { ConversationPlayer } from "@/lib/playback-engine";
 
 export default function Home() {
   const [selectedChatId, setSelectedChatId] = useState<string>("");
-  const [allMessages, setAllMessages] = useState<Record<string, Message[]>>(mockMessages);
+  const [allMessages, setAllMessages] =
+    useState<Record<string, Message[]>>(mockMessages);
 
   // Simulation state
   const [simulations, setSimulations] = useState<
@@ -142,7 +140,10 @@ export default function Home() {
     // Auto-select most recent chat after data is loaded
     if (!initialLoadRef.current && combinedChats.length > 0) {
       const sortedChats = [...combinedChats].sort((a, b) => {
-        return new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime();
+        return (
+          new Date(b.lastMessageTime).getTime() -
+          new Date(a.lastMessageTime).getTime()
+        );
       });
 
       initialLoadRef.current = true;
@@ -259,9 +260,13 @@ export default function Home() {
               name: simulation.participantName,
               avatar: simulation.participantAvatar,
               lastMessage:
-                simulation.playedMessages && simulation.playedMessages.length > 0
-                  ? simulation.playedMessages[simulation.playedMessages.length - 1].content
-                  : simulation.messages[0]?.content || "Start building your conversation",
+                simulation.playedMessages &&
+                simulation.playedMessages.length > 0
+                  ? simulation.playedMessages[
+                      simulation.playedMessages.length - 1
+                    ].content
+                  : simulation.messages[0]?.content ||
+                    "Start building your conversation",
               lastMessageTime: simulation.updatedAt,
             }
           : chat
@@ -313,7 +318,10 @@ export default function Home() {
           if (updatedChats.length > 0) {
             // Select the most recent chat
             const sortedChats = [...updatedChats].sort((a, b) => {
-              return new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime();
+              return (
+                new Date(b.lastMessageTime).getTime() -
+                new Date(a.lastMessageTime).getTime()
+              );
             });
             setSelectedChatId(sortedChats[0].id);
           } else {
@@ -338,7 +346,9 @@ export default function Home() {
   const handlePlaySimulation = () => {
     const simulation = getCurrentSimulation();
     if (!simulation || simulation.messages.length === 0) {
-      alert("Please add at least one message to the conversation before playing.");
+      alert(
+        "Please add at least one message to the conversation before playing."
+      );
       return;
     }
 
@@ -384,7 +394,7 @@ export default function Home() {
         setPlaybackEngine((prev) => ({
           ...prev,
           state: "completed",
-          simulatedInputText: "",  // Clear on complete
+          simulatedInputText: "", // Clear on complete
         }));
 
         // Save played messages to localStorage
@@ -404,9 +414,7 @@ export default function Home() {
 
           // Update chat last message
           const lastMsg =
-            playbackMessagesRef.current[
-              playbackMessagesRef.current.length - 1
-            ];
+            playbackMessagesRef.current[playbackMessagesRef.current.length - 1];
           setAllChats((prev) =>
             prev.map((chat) =>
               chat.simulationId === activeSimulation
@@ -490,12 +498,15 @@ export default function Home() {
               setPlaybackEngine((prev) => ({
                 ...prev,
                 state: "completed",
-                simulatedInputText: "",  // Clear on complete
+                simulatedInputText: "", // Clear on complete
               }));
 
               // Save played messages to localStorage
               if (activeSimulation && playbackMessagesRef.current.length > 0) {
-                savePlayedMessages(activeSimulation, playbackMessagesRef.current);
+                savePlayedMessages(
+                  activeSimulation,
+                  playbackMessagesRef.current
+                );
 
                 // Update local state
                 const updatedSimulation = {
